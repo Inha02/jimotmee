@@ -7,9 +7,9 @@ const app = express();
 app.use(express.json());
 
 const mongoose = require('mongoose');
-
-const authRoutes = require('./routes/auth');
+const authRouter = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
+const userRoutes = require('./routes/user');
 
 // MongoDB 연결 URI
 const MONGO_URI = process.env.MONGO_URI
@@ -25,11 +25,14 @@ mongoose.connect(MONGO_URI, {
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/', authRouter);
+app.use('/auth', authRouter);
+app.use('/users', userRoutes);
 
 // Routes
-app.get('/', (req, res) => {
-    res.send('Hello, Jimotmee!');
-});
+// app.get('/', (req, res) => {
+//     res.send('Hello, Jimotmee!');
+// });
 
 const PORT = 5000;
 
