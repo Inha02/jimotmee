@@ -48,6 +48,13 @@ const initialState = {
 export default function palette(state = initialState, action) {
   switch (action.type) {
     case SET_COLOR:
+      // 로그인 상태 확인
+      const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+      if (!isLoggedIn) {
+        console.warn('로그인 후에만 색상을 변경할 수 있습니다.');
+        return state; // 상태 변경 없이 현재 상태 반환
+      }
+
       const { key, value } = action.payload;
       return {
         ...state,
