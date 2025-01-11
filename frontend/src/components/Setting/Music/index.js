@@ -7,6 +7,9 @@ import Modal from '../../Modal/Modal';
 
 const Wrapper = styled.div`
   background: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const TitleWrapper = styled.div`
@@ -69,7 +72,7 @@ const Li = styled.li`
   &:hover {
     font-weight: bold;
   }
-  P:last-of-type {
+  p:last-of-type {
     margin-top: 3px;
     color: #ccc;
     font-size: 0.6rem;
@@ -101,104 +104,27 @@ const MusicPlayer = () => {
 
   const [isOpenModal, setIsOpenModal] = useState(false); // 모달
   const [isOpenList, setIsOpenList] = useState(false); // 재생목록
-  const handleList = () => setIsOpenList(!isOpenList);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태
 
-  const handleUserInteraction = () => {
-    const audio = audioRef.current;
-    if (audio.player.pause) {
-      audio.player.play();
-    }
-    setIsOpenModal(!isOpenModal);
-  };
-
-  // 재생정보 전부 초기화: 오디오 + 스토어
-  const initCurSong = useCallback(
-    (audio, idx) => {
-      audio.setCurrentSong(idx, 0);
-      dispatch(
-        setCurSong({
-          idx: audio.idx,
-          title: audio.title,
-          curTime: 0,
-        }),
-      );
-    },
-    [dispatch],
-  );
-
-  // 다음 곡으로 이동
-  const moveToNextSong = (audio, idx) => {
-    initCurSong(audio, idx);
-    if (audio.player.pause) {
-      audio.player.play(); // 자동 재생
-    }
-  };
-
-  // 빈 deps: 처음 마운트, 언마운트 될 때만 실행
   useEffect(() => {
-    // audio 객체 생성
-    audioRef.current = new Audio(
-      playerRef.current,
-      playlistRef.current.childNodes,
-    );
-    const audio = audioRef.current;
-    audio.setCurrentSong(curSong.idx, curSong.curTime);
-
-    // 페이지 마운트 후 자동 재생 처리
-    const playPromise = audio.player.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(e => {
-        // 자동 재생 실패
-        if (e.name === 'NotAllowedError') {
-          if (!isOpenModal) {
-            // 재동 재생 위한 사용자 인터랙션 유도
-            setIsOpenModal(!isOpenModal);
-          }
-        }
-      });
-    }
-
-    // 재생목록 반복
-    audio.player.addEventListener('ended', () => {
-      let idx = audio.idx;
-      idx++;
-
-      if (idx === audio.playlists.length) {
-        idx = 0;
-      }
-
-      moveToNextSong(audio, idx);
-    });
-
-    // 재생목록 클릭
-    audio.playlists.forEach((item, idx) => {
-      item.addEventListener('click', () => {
-        moveToNextSong(audio, idx);
-      });
-    });
-
-    // 언마운트될 때 현재 재생중인 곡 정보 저장
-    return () => {
-      dispatch(
-        setCurSong({
-          idx: audio.idx,
-          title: audio.title,
-          curTime: audio.player.currentTime,
-        }),
-      );
-    };
+    const sessionData = sessionStorage.getItem('isLoggedIn');
+    setIsLoggedIn(sessionData === 'true');
   }, []);
 
-  // 재생시간 업데이트되면 오디오 객체에도 반영
-  useEffect(() => {
-    const audio = audioRef.current;
-    audio.setCurTime(curSong.curTime);
-  }, [curSong.curTime]);
+  const handleList = () => setIsOpenList(!isOpenList);
+
+  if (!isLoggedIn) {
+    return (
+      <Wrapper>
+        <p>로그인이 필요합니다.</p>
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper>
       <Modal isOpen={isOpenModal} width={100} height={100} bg="lightblue">
-        <PlayButton onClick={handleUserInteraction}>🎶</PlayButton>
+        <PlayButton onClick={() => setIsOpenModal(!isOpenModal)}>🎶</PlayButton>
       </Modal>
       <TitleWrapper>
         🎶 <Title>{curSong.title}</Title>
