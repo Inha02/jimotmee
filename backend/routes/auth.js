@@ -3,16 +3,16 @@ const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } = require('../config/kakao');
-const router = express.Router();
+const authRouter = express.Router();
 
 // 카카오 로그인 URL
-router.get('/kakao', (req, res) => {
+authRouter.get('/kakao', (req, res) => {
     const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}`;
     res.redirect(kakaoAuthUrl);
 });
 
 // 카카오 콜백 처리
-router.get('/kakao/callback', async (req, res) => {
+authRouter.get('/kakao/callback', async (req, res) => {
     const { code } = req.query;
 
     try {
@@ -52,4 +52,4 @@ router.get('/kakao/callback', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = authRouter;

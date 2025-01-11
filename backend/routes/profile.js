@@ -1,10 +1,10 @@
 const express = require('express');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-const router = express.Router();
+const profileRouter = express.Router();
 
 // 사용자 프로필 조회
-router.get('/', async (req, res) => {
+profileRouter.get('/', async (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return res.status(401).json({ message: '토큰이 없습니다.' });
 
@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
 });
 
 // 사용자 프로필 수정
-router.put('/', async (req, res) => {
+profileRouter.put('/', async (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];
     const { name, profileImage } = req.body;
 
@@ -41,4 +41,4 @@ router.put('/', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = profileRouter;
