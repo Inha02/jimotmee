@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const authRouter = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const userRoutes = require('./routes/user');
+const friendRoutes = require('./routes/friendRoutes');
 
 // MongoDB 연결 URI
 const MONGO_URI = process.env.MONGO_URI
@@ -28,6 +29,8 @@ app.use(bodyParser.json());
 app.use('/', authRouter);
 app.use('/auth', authRouter);
 app.use('/users', userRoutes);
+app.use('/profile', profileRoutes);
+app.use('/api/friends', friendRoutes);
 
 // Routes
 // app.get('/', (req, res) => {
