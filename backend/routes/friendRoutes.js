@@ -55,5 +55,24 @@ router.post('/accept-request', async (req, res) => {
     }
 });
 
+router.delete('/delete-friend', async (req, res) => {
+    const { userId, friendId } = req.body;
+
+    try {
+        // userId의 친구 목록에서 friendId 제거
+        await User.findByIdAndUpdate(userId, {
+            $pull: { friends: friendId }
+        });
+
+        // friendId의 친구 목록에서 userId 제거
+        await User.findByIdAndUpdate(friendId, {
+            $pull: { friends: userId }
+        });
+
+        res.status(200).json({ message: '친구 관계가 성공적으로 삭제되었습니다.' });
+    } catch (error) {
+        res.status(500).json({ message: '오류가 발생했습니다.', error });
+    }
+});
 
 module.exports = router;
