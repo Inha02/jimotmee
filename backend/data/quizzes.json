@@ -1,0 +1,107 @@
+[
+    {
+        "question": "이따 5시에 ㅇㅇㅇ에 불이 날거예요. ㅇㅇㅇ에 들어갈 말은?",
+        "imageUrl": "5.jpg",
+        "correctAnswer": "호떡집"
+    },
+    {
+        "question": "이 게임의 이름은?",
+        "imageUrl": "anipang.jpg",
+        "correctAnswer": "애니팡"
+    },
+    {
+        "question": "이 그룹의 대표 히트곡은?",
+        "imageUrl": "bba.jpg",
+        "correctAnswer": "빠빠빠"
+    },
+    {
+        "question": "사진 속 강아지의 이름은?",
+        "imageUrl": "browny.jpg",
+        "correctAnswer": "브라우니"
+    },
+    {
+        "question": "사진 속 장소는?",
+        "imageUrl": "chicks.jpeg",
+        "correctAnswer": "학교앞"
+    },
+    {
+        "question": "이 동화책의 제목은?",
+        "imageUrl": "cloud.jpg",
+        "correctAnswer": "구름빵"
+    },
+    {
+        "question": "이 캐릭터의 이름은?",
+        "imageUrl": "dibo.jpg",
+        "correctAnswer": "디보"
+    },
+    {
+        "question": "세상엔 ㅇㅇㅇ 딱 두명 있대",
+        "imageUrl": "dubi.jpg",
+        "correctAnswer": "비호감"
+    },
+    {
+        "question": "이 애니메이션은?",
+        "imageUrl": "eunha.jpg",
+        "correctAnswer": "은하철도999"
+    },
+    {
+        "question": "이 아이스크림은?",
+        "imageUrl": "geobuk.jpg",
+        "correctAnswer": "거북알"
+    },
+    {
+        "question": "이 노래는?",
+        "imageUrl": "nemo.jpg",
+        "correctAnswer": "네모의꿈"
+    },
+    {
+        "question": "이 물건은?",
+        "imageUrl": "piltong.jpg",
+        "correctAnswer": "필통"
+    },
+    {
+        "question": "이 게임은?",
+        "imageUrl": "poo.jpg",
+        "correctAnswer": "포우"
+    },
+    {
+        "question": "이 애니메이션은?",
+        "imageUrl": "power.jpg",
+        "correctAnswer": "파워레인져"
+    },
+    {
+        "question": "네모에 들어갈 말은?",
+        "imageUrl": "running.png",
+        "correctAnswer": "시간"
+    },
+    {
+        "question": "이 광고의 상호명은?",
+        "imageUrl": "sanwa.jpg",
+        "correctAnswer": "산와머니"
+    },
+    {
+        "question": "이 프로그램의 이름은?",
+        "imageUrl": "sponge.jpg",
+        "correctAnswer": "스펀지"
+    },
+    {
+        "question": "이 게임은?",
+        "imageUrl": "tapsonic.jpg",
+        "correctAnswer": "탭소닉"
+    },
+    {
+        "question": "이 캐릭터의 이름은?",
+        "imageUrl": "zolla.png",
+        "correctAnswer": "졸라맨"
+    },
+    {
+        "question": "이 프로그램의 이름은?",
+        "imageUrl": "talchul.png",
+        "correctAnswer": "위기탈출넘버원"
+    },
+    {
+        "question": "이 게임은?",
+        "imageUrl": "temple.jpg",
+        "correctAnswer": "탬플런"
+    }
+]
