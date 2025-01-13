@@ -14,9 +14,12 @@ const ContentWrapper = styled.div`
 `;
 
 const Content = ({ children }) => {
+  const userInfo = JSON.parse(sessionStorage.getItem('userInfo')) || {};
+  const nickname = userInfo.name || '[nickname]'; // name 값이 없을 경우 기본 닉네임 사용
+
   return (
     <ContentWrapper>
-      <h1>[nickname]님의 미니홈피</h1>
+      <h1>{nickname}님의 미니홈피</h1>
       {children}
       <MainMenu />
     </ContentWrapper>
