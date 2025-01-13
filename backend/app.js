@@ -8,7 +8,9 @@ app.use(express.json());
 
 const mongoose = require('mongoose');
 
-const authRoutes = require('./routes/auth');
+const authRouter = require('./routes/auth');
+app.use('/', authRouter);
+app.use('/auth', authRouter);
 const profileRoutes = require('./routes/profile');
 
 // MongoDB 연결 URI

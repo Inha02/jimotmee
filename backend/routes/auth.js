@@ -8,6 +8,7 @@ const router = express.Router();
 // 카카오 로그인 URL
 router.get('/kakao', (req, res) => {
     const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}`;
+    console.log('Redirect URI:', KAKAO_REDIRECT_URI); // 디버깅용
     res.redirect(kakaoAuthUrl);
 });
 
@@ -33,19 +34,32 @@ router.get('/kakao/callback', async (req, res) => {
             headers: { Authorization: `Bearer ${kakaoAccessToken}` },
         });
 
+        console.log('Kakao User Data:', userResponse.data);
+
         const { id: kakaoId, properties } = userResponse.data;
         const { nickname: name, profile_image: profileImage } = properties;
+
+        console.log('kakaoId:', kakaoId);
+        console.log('name:', name);
+        console.log('profileImage:', profileImage);
 
         // 사용자 DB 저장 또는 업데이트
         let user = await User.findOne({ kakaoId });
         if (!user) {
             user = new User({ kakaoId, name, profileImage });
+            console.log('user.kakaoId:', user.kakaoId);
             await user.save();
         }
+        console.log('user.kakaoId:', user.kakaoId);
 
         // JWT 발급
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token, user });
+        const token = jwt.sign(
+            { userId: user._id, name: user.name, profileImage: user.profileImage }, // 사용자 정보 포함
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+        console.log('JWT:', token);
+        res.redirect(`${process.env.CLIENT_URL}/callback?token=${encodeURIComponent(token)}`);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: '카카오 로그인 실패' });

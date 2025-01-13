@@ -43,14 +43,33 @@ const ChangeSkin = () => {
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태
 
   useEffect(() => {
-    // 로그인 상태 확인
-    const sessionData = sessionStorage.getItem('isLoggedIn');
-    setIsLoggedIn(sessionData === 'true');
+    // JWT 만료 시간 확인
+    const tokenExpiry = sessionStorage.getItem('tokenExpiry');
+    const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초 단위)
 
-    // 로그인이 되어 있다면 DB에서 사용자 데이터를 로드
-    if (sessionData === 'true') {
+    if (tokenExpiry && currentTime < parseInt(tokenExpiry, 10)) {
+      setIsLoggedIn(true); // 유효한 JWT
+    } else {
+      // 만료된 토큰 제거
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('userInfo');
+      sessionStorage.removeItem('tokenExpiry');
+      setIsLoggedIn(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    // JWT가 유효하다면 DB에서 사용자 데이터를 로드
+    if (isLoggedIn) {
       setIsLoading(true);
-      fetch('/api/user/colors', { method: 'GET', credentials: 'include' })
+      const token = sessionStorage.getItem('token');
+      fetch('/api/user/colors', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then(response => response.json())
         .then(data => {
           if (data.success) {
@@ -62,7 +81,7 @@ const ChangeSkin = () => {
         .catch(err => console.error('배경 색상 로드 오류:', err))
         .finally(() => setIsLoading(false));
     }
-  }, [target]);
+  }, [target, isLoggedIn]);
 
   if (!isLoggedIn) {
     return (

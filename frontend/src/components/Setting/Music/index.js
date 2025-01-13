@@ -7,9 +7,6 @@ import Modal from '../../Modal/Modal';
 
 const Wrapper = styled.div`
   background: #eee;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
 const TitleWrapper = styled.div`
@@ -93,6 +90,10 @@ const PlayButton = styled.h4`
   }
 `;
 
+const LoginMessage = styled.p`
+  text-align: center;
+`;
+
 const MusicPlayer = () => {
   const dispatch = useDispatch();
   const { list: miniPlaylist } = useSelector(state => state.playlist);
@@ -107,16 +108,103 @@ const MusicPlayer = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태
 
   useEffect(() => {
-    const sessionData = sessionStorage.getItem('isLoggedIn');
-    setIsLoggedIn(sessionData === 'true');
+    // JWT 토큰 만료 시간 확인
+    const tokenExpiry = sessionStorage.getItem('tokenExpiry');
+    const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초 단위)
+
+    if (tokenExpiry && currentTime < parseInt(tokenExpiry, 10)) {
+      setIsLoggedIn(true); // 유효한 JWT
+    } else {
+      // 만료된 토큰 제거
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('userInfo');
+      sessionStorage.removeItem('tokenExpiry');
+      setIsLoggedIn(false);
+    }
   }, []);
 
   const handleList = () => setIsOpenList(!isOpenList);
 
+  const handleUserInteraction = () => {
+    const audio = audioRef.current;
+    if (audio.player.pause) {
+      audio.player.play();
+    }
+    setIsOpenModal(!isOpenModal);
+  };
+
+  const initCurSong = useCallback(
+    (audio, idx) => {
+      audio.setCurrentSong(idx, 0);
+      dispatch(
+        setCurSong({
+          idx: audio.idx,
+          title: audio.title,
+          curTime: 0,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const moveToNextSong = (audio, idx) => {
+    initCurSong(audio, idx);
+    if (audio.player.pause) {
+      audio.player.play();
+    }
+  };
+
+  useEffect(() => {
+    if (!isLoggedIn) return; // 로그인 상태가 아니면 초기화하지 않음
+
+    audioRef.current = new Audio(
+      playerRef.current,
+      playlistRef.current.childNodes,
+    );
+    const audio = audioRef.current;
+    audio.setCurrentSong(curSong.idx, curSong.curTime);
+
+    const playPromise = audio.player.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(e => {
+        if (e.name === 'NotAllowedError') {
+          if (!isOpenModal) {
+            setIsOpenModal(!isOpenModal);
+          }
+        }
+      });
+    }
+
+    audio.player.addEventListener('ended', () => {
+      let idx = audio.idx;
+      idx++;
+      if (idx === audio.playlists.length) {
+        idx = 0;
+      }
+      moveToNextSong(audio, idx);
+    });
+
+    audio.playlists.forEach((item, idx) => {
+      item.addEventListener('click', () => {
+        moveToNextSong(audio, idx);
+      });
+    });
+
+    return () => {
+      dispatch(
+        setCurSong({
+          idx: audio.idx,
+          title: audio.title,
+          curTime: audio.player.currentTime,
+        }),
+      );
+    };
+  }, [isLoggedIn, curSong.idx, curSong.curTime, dispatch]);
+
   if (!isLoggedIn) {
     return (
       <Wrapper>
-        <p>로그인이 필요합니다.</p>
+        <LoginMessage>로그인이 필요합니다.</LoginMessage>
       </Wrapper>
     );
   }
@@ -124,7 +212,7 @@ const MusicPlayer = () => {
   return (
     <Wrapper>
       <Modal isOpen={isOpenModal} width={100} height={100} bg="lightblue">
-        <PlayButton onClick={() => setIsOpenModal(!isOpenModal)}>🎶</PlayButton>
+        <PlayButton onClick={handleUserInteraction}>🎶</PlayButton>
       </Modal>
       <TitleWrapper>
         🎶 <Title>{curSong.title}</Title>
