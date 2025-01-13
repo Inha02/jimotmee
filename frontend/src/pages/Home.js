@@ -46,7 +46,7 @@ const ContentSection = styled.section`
       border-bottom: 2px solid #eee;
     }
   }
-  ul {
+  ol {
     line-height: 1.8;
     li {
       height: 30px;
@@ -55,48 +55,11 @@ const ContentSection = styled.section`
   }
 `;
 
-// const ProfileSection = styled.section`
-//   height: fit-content !important;
-//   &:last-of-type {
-//     padding: 10px 0;
-//     border-top: 1px dashed #a5a5a5;
-//     p {
-//       display: flex;
-//       align-items: center;
-//       margin: 10px 0;
-//     }
-//     svg {
-//       margin-right: 3px;
-//       color: #666;
-//     }
-//   }
-//   img {
-//     width: 100%;
-//     height: auto;
-//     object-fit: cover;
-//   }
-//   .my-name {
-//     margin-right: 5px;
-//     color: ${props => props.theme.mainColor.color};
-//     font-size: 1rem;
-//     font-weight: bold;
-//   }
-//   .my-sex,
-//   .my-brthdy {
-//     color: #9e9e9e;
-//     font-size: 0.85rem;
-//   }
-//   .my-sex {
-//     margin-right: 2px;
-//     font-size: 0.8rem;
-//   }
-// `;
-
 const ProfileSection = styled.section`
   text-align: center;
   img {
-    width: 180px;
-    height: 180px;
+    width: 100%;
+    max-width: 180px;
     object-fit: cover;
     border-radius: 50%;
     margin: 0 auto;
@@ -130,31 +93,7 @@ const ProfileSection = styled.section`
   }
 `;
 
-
-
-
-// const LinkTitle = styled.p`
-//   display: flex;
-//   align-items: center;
-//   margin: 10px 0;
-//   &:first-of-type {
-//     margin-top: 20px;
-//   }
-//   &:last-of-type {
-//     margin-bottom: 20px;
-//   }
-//   cursor: pointer;
-//   svg {
-//     margin-right: 5px;
-//     color: #666;
-//     font-size: 1.2rem;
-//   }
-//   &:hover {
-//     color: ${props => props.theme.mainColor.color};
-//   }
-// `;
-
-const LinkTitle = styled.div`
+const MyPet = styled.div`
   margin: 20px 0;
   border-top: 1px dashed #ddd;
   padding-top: 10px;
@@ -196,12 +135,7 @@ const LinkTitle = styled.div`
 `;
 
 const Home = () => {
-  const goGithub = () => {
-    window.location.href = 'https://github.com/danbiilee/react-miniportfoly';
-  };
-  const goVelog = () => {
-    window.location.href = 'https://velog.io/@dblee';
-  };
+  // 로그아웃 함수
   const logout = () => {
     alert('로그아웃 되었습니다!');
     sessionStorage.clear();
@@ -220,47 +154,17 @@ const Home = () => {
       <Sidebar>
         <Card>
           <FlexWrapper>
-            {/* <ProfileSection>
-            <img src={profileImage} alt="profile" />
-              <LinkTitle onClick={goGithub}>
-                <MdLink />
-                Github
-              </LinkTitle>
-              <LinkTitle onClick={goVelog}>
-                <MdLink />
-                dblee.log
-              </LinkTitle>
-            </ProfileSection>
-            <ProfileSection>
-              <p>
-                <span className="my-name">{myname}</span>
-                <span className="my-sex">(♀)</span>
-                <span className="my-brthdy">1992.08.19</span>
-              </p>
-              <p>
-                <MdMailOutline />
-                danbi.db@gmail.com
-              </p>
-              <p>
-                <MdPhoneIphone />
-                010-4013-4147
-              </p>
-              <p>
-                <MdLocationOn />
-                경기도 안양시
-              </p>
-            </ProfileSection> */}
             <ProfileSection>
               <img src={profileImage} alt="profile" />
               <div className="profile-row">
-                <span className="my-name">{myname}</span> {/* 이름 */}
+                <span className="my-name">{myname}</span>
                 <button className="logout-button" onClick={logout}>
                   로그아웃
-                </button> {/* 로그아웃 버튼 */}
+                </button>
               </div>
             </ProfileSection>
 
-            <LinkTitle>
+            <MyPet>
               <p className="pet-title">마이펫 키우기</p>
               <img
                 src={publicUrl + '/resources/img/dog1.jpg'}
@@ -272,14 +176,14 @@ const Home = () => {
                 <button>씻기</button>
                 <button>산책하기</button>
               </div>
-            </LinkTitle>
+            </MyPet>
           </FlexWrapper>
         </Card>
       </Sidebar>
       <Content>
         <Card>
           <ContentSection>
-            <h2>미니룸</h2>
+            <h2>마이룸</h2>
             <div>
               <img
                 src={publicUrl + '/resources/img/miniroom.gif'}
@@ -288,14 +192,12 @@ const Home = () => {
             </div>
           </ContentSection>
           <ContentSection>
-            <h2>한 줄 감성</h2>
-            <ul>
+            <h2>스코어보드</h2>
+            <ol>
               <li>싸이월드 미니홈피 감성으로 기획, 개발했습니다~☆</li>
               <li>프로필 페이지를 구경해주세요~☆</li>
               <li>배경도 바꿀 수 있답니다~☆</li>
-              <li></li>
-              <li></li>
-            </ul>
+            </ol>
           </ContentSection>
         </Card>
       </Content>

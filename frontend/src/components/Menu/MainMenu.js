@@ -41,6 +41,11 @@ function MainMenu() {
             프로필
           </NavLink>
         </li>
+        <li>
+          <NavLink to="/board" activeClassName="selected">
+            게시판
+          </NavLink>
+        </li>
       </ul>
     </Nav>
   );

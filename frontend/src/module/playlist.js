@@ -6,8 +6,8 @@ const initialState = {
   list: [
     'Bigbang-CAFE',
     'Bigbang-BLUE',
-    'Bigbang-LOVE_DUST',
-    'Bigbang-BAD_BOY',
+    'Bigbang-LOVEDUST',
+    'Bigbang-BADBOY',
   ],
   curSong: {
     idx: 0,

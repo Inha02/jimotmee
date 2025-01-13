@@ -154,52 +154,121 @@ const MusicPlayer = () => {
     }
   };
 
+  // useEffect(() => {
+  //   if (!isLoggedIn) return; // 로그인 상태가 아니면 초기화하지 않음
+
+  //   audioRef.current = new Audio(
+  //     playerRef.current,
+  //     playlistRef.current.childNodes,
+  //   );
+  //   const audio = audioRef.current;
+  //   audio.setCurrentSong(curSong.idx, curSong.curTime);
+
+  //   const playPromise = audio.player.play();
+  //   if (playPromise !== undefined) {
+  //     playPromise.catch(e => {
+  //       if (e.name === 'NotAllowedError') {
+  //         if (!isOpenModal) {
+  //           setIsOpenModal(!isOpenModal);
+  //         }
+  //       }
+  //     });
+  //   }
+
+  //   audio.player.addEventListener('ended', () => {
+  //     let idx = audio.idx;
+  //     idx++;
+  //     if (idx === audio.playlists.length) {
+  //       idx = 0;
+  //     }
+  //     moveToNextSong(audio, idx);
+  //   });
+
+  //   audio.playlists.forEach((item, idx) => {
+  //     item.addEventListener('click', () => {
+  //       moveToNextSong(audio, idx);
+  //     });
+  //   });
+
+  //   return () => {
+  //     dispatch(
+  //       setCurSong({
+  //         idx: audio.idx,
+  //         title: audio.title,
+  //         curTime: audio.player.currentTime,
+  //       }),
+  //     );
+  //   };
+  // }, [isLoggedIn, curSong.idx, curSong.curTime, dispatch]);
+
   useEffect(() => {
-    if (!isLoggedIn) return; // 로그인 상태가 아니면 초기화하지 않음
-
-    audioRef.current = new Audio(
-      playerRef.current,
-      playlistRef.current.childNodes,
-    );
+    if (!isLoggedIn) return;
+  
+    // Audio 객체 초기화
+    audioRef.current = new Audio(playerRef.current, playlistRef.current.childNodes);
     const audio = audioRef.current;
+  
+    // 현재 곡 설정
     audio.setCurrentSong(curSong.idx, curSong.curTime);
-
+  
+    // 곡 재생
     const playPromise = audio.player.play();
     if (playPromise !== undefined) {
       playPromise.catch(e => {
-        if (e.name === 'NotAllowedError') {
-          if (!isOpenModal) {
-            setIsOpenModal(!isOpenModal);
-          }
+        if (e.name === 'NotAllowedError' && !isOpenModal) {
+          setIsOpenModal(true); // 모달 열기
         }
       });
     }
-
-    audio.player.addEventListener('ended', () => {
-      let idx = audio.idx;
-      idx++;
-      if (idx === audio.playlists.length) {
-        idx = 0;
-      }
-      moveToNextSong(audio, idx);
-    });
-
-    audio.playlists.forEach((item, idx) => {
-      item.addEventListener('click', () => {
-        moveToNextSong(audio, idx);
-      });
-    });
-
-    return () => {
+  
+    // 곡이 종료될 때 다음 곡으로 전환
+    const handleSongEnd = () => {
+      let nextIdx = audio.idx + 1;
+      if (nextIdx >= audio.playlists.length) nextIdx = 0;
+  
+      // 상태와 오디오 동기화
       dispatch(
         setCurSong({
-          idx: audio.idx,
-          title: audio.title,
-          curTime: audio.player.currentTime,
+          idx: nextIdx,
+          title: audio.playlists[nextIdx].dataset.title,
+          curTime: 0,
         }),
       );
     };
-  }, [isLoggedIn, curSong.idx, curSong.curTime, dispatch]);
+  
+    // 이벤트 리스너 등록
+    audio.player.addEventListener('ended', handleSongEnd);
+  
+    // 재생목록 클릭 이벤트
+    const handlePlaylistClick = idx => {
+      // 클릭한 곡의 상태와 오디오 동기화
+      audio.setCurrentSong(idx, 0); // 오디오 상태 업데이트
+      audio.player.play(); // 재생 시작
+  
+      // Redux 상태 업데이트
+      dispatch(
+        setCurSong({
+          idx,
+          title: audio.playlists[idx].dataset.title,
+          curTime: 0,
+        }),
+      );
+    };
+  
+    // 재생목록에 클릭 이벤트 추가
+    audio.playlists.forEach((item, idx) => {
+      item.removeEventListener('click', () => handlePlaylistClick(idx)); // 기존 리스너 제거
+      item.addEventListener('click', () => handlePlaylistClick(idx)); // 새 리스너 추가
+    });
+  
+    // Cleanup
+    return () => {
+      audio.player.removeEventListener('ended', handleSongEnd);
+      audio.playlists.forEach((item, idx) => {
+        item.removeEventListener('click', () => handlePlaylistClick(idx));
+      });
+    };
+  }, [isLoggedIn, curSong.idx, curSong.curTime, dispatch]); // 의존성 배열 최적화
 
   if (!isLoggedIn) {
     return (
