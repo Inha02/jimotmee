@@ -4,14 +4,14 @@ export const setCurSong = payload => ({ type: SET_CURSONG, payload });
 
 const initialState = {
   list: [
-    '빅뱅(Bigbang) - CAFE',
-    '빅뱅(Bigbang) - BLUE',
-    '빅뱅(Bigbang) - 사랑먼지',
-    '빅뱅(Bigbang) - BAD BOY',
+    'Bigbang-CAFE',
+    'Bigbang-BLUE',
+    'Bigbang-LOVEDUST',
+    'Bigbang-BADBOY',
   ],
   curSong: {
     idx: 0,
-    title: '빅뱅(Bigbang) - CAFE',
+    title: 'Bigbang-CAFE',
     curTime: 0,
   },
 };

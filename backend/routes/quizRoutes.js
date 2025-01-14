@@ -1,4 +1,5 @@
 const express = require('express');
+const multer = require("multer");
 const Quiz = require('../models/quizModel');
 const multer = require('multer');
 const router = express.Router();
