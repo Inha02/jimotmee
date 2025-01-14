@@ -15,6 +15,13 @@ const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태
 
     useEffect(() => {
+        // 카카오 SDK 초기화
+        if (!window.Kakao.isInitialized()) {
+          const kakaoKey = process.env.REACT_APP_JAVASCRIPT_KEY;
+          window.Kakao.init(kakaoKey);
+          console.log('Kakao SDK initialized:', window.Kakao.isInitialized());
+        }
+
         // JWT 토큰 만료 시간 확인
         const tokenExpiry = sessionStorage.getItem('tokenExpiry');
         const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초 단위)

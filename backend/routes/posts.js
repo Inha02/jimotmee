@@ -54,18 +54,25 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get("/my-posts/:userId", async (req, res) => {
-    const { userId } = req.params; // URL에서 userId 가져오기
-
-    try {
-        // 해당 userId로 필터링된 게시글 조회
-        const myPosts = await Post.find({ user: userId }).populate("user", "name profileImage");
-        res.status(200).json(myPosts);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+router.get('/mine', async (req, res) => {
+    const { userId, offset = 0, limit = 10 } = req.query;
+  
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
     }
-});
-
+  
+    try {
+      const posts = await Post.find({ user: userId }) // userId로 필터링
+        .populate('user', 'name profileImage')
+        .sort({ createdAt: -1 }) // 최신순 정렬
+        .skip(parseInt(offset, 10)) // 시작점 지정
+        .limit(parseInt(limit, 10)); // 데이터 개수 제한
+  
+      res.status(200).json(posts);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
 
 // 게시글 삭제
 router.delete("/delete/:id", async (req, res) => {
