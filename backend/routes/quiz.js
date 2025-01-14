@@ -1,6 +1,6 @@
 const express = require('express');
 const Quiz = require('../models/quizModel');
-
+const multer = require('multer');
 const router = express.Router();
 
 const storage = multer.diskStorage({

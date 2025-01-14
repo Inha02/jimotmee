@@ -5,6 +5,10 @@ const quizSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    score: {
+        type: String,
+        required: true,
+    },
     imageUrl: {
         type: String,
         required: true,
