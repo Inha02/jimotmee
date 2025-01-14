@@ -37,13 +37,13 @@ function MainMenu() {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/profile" activeClassName="selected">
-            프로필
+          <NavLink to="/board" activeClassName="selected">
+            게시판
           </NavLink>
         </li>
         <li>
-          <NavLink to="/board" activeClassName="selected">
-            게시판
+          <NavLink to="/quiz" activeClassName="selected">
+            퀴즈
           </NavLink>
         </li>
       </ul>
