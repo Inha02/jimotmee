@@ -11,6 +11,7 @@
     },
     {
         "question": "이 그룹의 대표 히트곡은?",
+        "score": "",
         "imageUrl": "bba.jpg",
         "correctAnswer": "빠빠빠"
     },

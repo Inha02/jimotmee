@@ -54,6 +54,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get("/my-posts/:userId", async (req, res) => {
+    const { userId } = req.params; // URL에서 userId 가져오기
+
+    try {
+        // 해당 userId로 필터링된 게시글 조회
+        const myPosts = await Post.find({ user: userId }).populate("user", "name profileImage");
+        res.status(200).json(myPosts);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 
 // 게시글 삭제
