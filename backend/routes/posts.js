@@ -19,12 +19,11 @@ const upload = multer({ storage });
 
 //게시글 추가
 router.post("/add", upload.single("image"), async (req, res) => {
-    const { title, content, userId } = req.body; // userId 추가
-    const image = req.file ? req.file.path : null;
+    const { content, userId } = req.body; // userId 추가
+    const image = req.file ? req.file.filename : null;
 
     try {
         const newPost = new Post({
-            title,
             content,
             image,
             user: userId, // userId 저장
@@ -37,14 +36,22 @@ router.post("/add", upload.single("image"), async (req, res) => {
     }
 });
 
-//게시글 목록 조회
-router.get("/", async (req, res) => {
-    try {
-        const posts = await Post.find().populate("user", "name profileImage"); // 사용자 이름과 프로필 사진만 가져옴
-        res.status(200).json(posts);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+// 게시글 목록 조회 (최근 게시물 순)
+router.get('/', async (req, res) => {
+  const offset = parseInt(req.query.offset, 10) || 0; // 기본값 0
+  const limit = parseInt(req.query.limit, 10) || 10; // 기본값 10
+
+  try {
+    const posts = await Post.find()
+      .populate("user", "name profileImage")
+      .sort({ createdAt: -1 }) // 최신순 정렬
+      .skip(offset) // 시작점 지정
+      .limit(limit); // 데이터 개수 제한
+
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 
