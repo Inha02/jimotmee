@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import BoardItem from './BoardItem';
 
@@ -6,6 +6,19 @@ const Wrapper = styled.div`
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
+    h2 {
+    margin-bottom: 10px; /* 기존 마진 조정 */
+    position: relative;
+    top: -10px; /* 10px 위로 이동 */
+    font-weight: bold;
+    font-size: 1rem;
+    color: ${props => props.theme.mainColor.color};
+  }
+`;
+
+const ScrollContainer = styled.div`
+  height: 450px; /* Card의 높이를 제한 */
+  overflow-y: auto; /* 스크롤 가능 */
 `;
 
 const Message = styled.div`
@@ -20,57 +33,98 @@ const MyBoard = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const LIMIT = 10;
 
-  // 게시물 데이터를 가져오는 함수
-  const fetchPosts = async (page) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/my-posts?page=${page}&limit=${LIMIT}`);
-      const data = await response.json();
+  const SCROLL_THRESHOLD = 50; // 스크롤 감지 임계값 (px)
+  const containerRef = useRef(null); // ScrollContainer의 참조
 
+  const fetchPosts = useCallback(async (page) => {
+    setIsLoading(true);
+    setError(null);
+  
+    console.log(`Fetching posts for page: ${page}`);
+  
+    try {
+      const offset = (page - 1) * LIMIT;
+  
+      // 사용자 인증 정보 가져오기 (예: 토큰 또는 사용자 ID)
+      const userInfo = sessionStorage.getItem('userInfo'); // 인증 토큰 저장소에서 가져오기
+      const userId = userInfo ? JSON.parse(userInfo).userId : null;
+      if (!userId) {
+        throw new Error('로그인이 필요합니다.');
+      }
+  
+    // userId를 쿼리 파라미터로 추가
+    const response = await fetch(`/posts/mine?userId=${userId}&offset=${offset}&limit=${LIMIT}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+  
       if (data.length < LIMIT) {
         setHasMore(false);
       }
-
+  
       setPosts((prevPosts) => [...prevPosts, ...data]);
-    } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.log(`Fetched ${data.length} posts.`);
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [LIMIT]);
+
+      // 게시글 삭제 처리
+      const handleDelete = (deletedPostId) => {
+        setPosts((prevPosts) => prevPosts.filter((post) => post._id !== deletedPostId));
+      };
 
   // 페이지 변경 시 데이터 가져오기
   useEffect(() => {
     fetchPosts(page);
-  }, [page]);
+  }, [page, fetchPosts]);
 
-  // 무한 스크롤 구현
+  // Card 내에서 스크롤 감지
   useEffect(() => {
     const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop >=
-          document.documentElement.offsetHeight - 100 &&
-        hasMore &&
-        !isLoading
-      ) {
+      if (!containerRef.current) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight <= SCROLL_THRESHOLD;
+
+      if (isNearBottom && hasMore && !isLoading) {
         setPage((prevPage) => prevPage + 1);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasMore, isLoading]);
+    const container = containerRef.current;
+    container.addEventListener('scroll', handleScroll);
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [hasMore, isLoading, SCROLL_THRESHOLD]);
 
   return (
     <Wrapper>
       <h2>내 게시물</h2>
-      {posts.map((post, index) => (
-        <BoardItem key={index} post={post} />
-      ))}
-      {isLoading && <Message>로딩 중...</Message>}
-      {!hasMore && <Message>더 이상 게시물이 없습니다.</Message>}
+      <ScrollContainer ref={containerRef}>
+        {error && <Message>에러 발생: {error}</Message>}
+        {posts.map((post, index) => (
+          <BoardItem key={post._id || index} post={post} onDelete={handleDelete} />
+        ))}
+        {isLoading && <Message>로딩 중...</Message>}
+        {!hasMore && !isLoading && <Message>더 이상 게시물이 없습니다.</Message>}
+      </ScrollContainer>
     </Wrapper>
   );
 };

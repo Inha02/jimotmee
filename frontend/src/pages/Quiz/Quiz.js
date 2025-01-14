@@ -6,7 +6,7 @@ const Wrapper = styled.div`
   padding-top: 60px;
   text-align: center;
   font-family: Arial, sans-serif;
-  background-color: #ffffff; /* 흰색 배경 */
+  background-color: ${props => props.theme.cardBg.color}; /* 흰색 배경 */
   color: #000000; /* 검은색 글씨 */
   height: auto; /* 높이 자동 조정 */
   max-height: 600px; /* 최대 높이 제한 */

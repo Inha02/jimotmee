@@ -12,11 +12,12 @@ const Wrapper = styled.div`
     top: -10px; /* 10px 위로 이동 */
     font-weight: bold;
     font-size: 1rem;
+    color: ${props => props.theme.mainColor.color};
   }
 `;
 
 const ScrollContainer = styled.div`
-  height: 500px; /* Card의 높이를 제한 */
+  height: 450px; /* Card의 높이를 제한 */
   overflow-y: auto; /* 스크롤 가능 */
 `;
 
@@ -66,6 +67,11 @@ const WholeBoard = () => {
     }
   }, [LIMIT]);
 
+    // 게시글 삭제 처리
+    const handleDelete = (deletedPostId) => {
+      setPosts((prevPosts) => prevPosts.filter((post) => post._id !== deletedPostId));
+    };
+
   // 페이지 변경 시 데이터 가져오기
   useEffect(() => {
     fetchPosts(page);
@@ -98,7 +104,7 @@ const WholeBoard = () => {
       <ScrollContainer ref={containerRef}>
         {error && <Message>에러 발생: {error}</Message>}
         {posts.map((post, index) => (
-          <BoardItem key={post._id || index} post={post} />
+          <BoardItem key={post._id || index} post={post} onDelete={handleDelete} />
         ))}
         {isLoading && <Message>로딩 중...</Message>}
         {!hasMore && !isLoading && <Message>더 이상 게시물이 없습니다.</Message>}

@@ -68,7 +68,6 @@ const ButtonWrapper = styled.div`
     border: none;
     border-radius: 5px;
     padding: 5px 10px;
-    margin-left: 10px;
     margin-right: 10px;
     cursor: pointer;
     font-size: 0.85rem;
@@ -82,8 +81,67 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const BoardItem = ({ post }) => {
+const BoardItem = ({ post, onDelete }) => {
   if (!post) return null;
+
+  const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+  const isOwner = userInfo && userInfo.userId === post.user._id; // 작성자 확인
+
+  const handleDelete = async () => {
+    // 삭제 확인 팝업
+    const confirmDelete = window.confirm('정말로 이 게시물을 삭제하시겠습니까?');
+    if (!confirmDelete) return; // 사용자가 취소를 누르면 종료
+
+    try {
+      const response = await fetch(`/posts/delete/${post._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete post');
+      }
+
+      onDelete(post._id); // 삭제된 게시물 ID를 상위 컴포넌트에 전달
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
+
+  const handleShare = () => {
+    if (!window.Kakao) {
+      console.error('Kakao SDK not loaded');
+      return;
+    }
+
+    if (!window.Kakao.isInitialized()) {
+      window.Kakao.init(process.env.REACT_APP_JAVASCRIPT_KEY);
+    }
+
+    window.Kakao.Share.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: '친구야.. ㄱ나니??',
+        description: post.content,
+        imageUrl: `http://localhost:5000/uploads/${post.image}`,
+        link: {
+          mobileWebUrl: `http://localhost:3000/posts/${post._id}`,
+          webUrl: `http://localhost:3000/posts/${post._id}`,
+        },
+      },
+      buttons: [
+        {
+          title: '웹으로 보기',
+          link: {
+            mobileWebUrl: `http://localhost:3000/posts/${post._id}`,
+            webUrl: `http://localhost:3000/posts/${post._id}`,
+          },
+        },
+      ],
+    });
+  };
 
   return (
     <Wrapper>
@@ -106,7 +164,8 @@ const BoardItem = ({ post }) => {
           <p className="txt">{post.content}</p>
         </TxtWrapper>
         <ButtonWrapper>
-          <button>공유</button>
+          {isOwner && <button onClick={handleDelete}>삭제</button>}
+          <button onClick={handleShare}>공유</button>
         </ButtonWrapper>
       </PostWrapper>
     </Wrapper>
