@@ -13,7 +13,8 @@ const profileRoutes = require('./routes/profile');
 const userRoutes = require('./routes/user');
 const friendRoutes = require('./routes/friendRoutes');
 const postRouter = require('./routes/posts');
-const quizRoutes = require('./routes/quizRoutes');
+const quizRoutes = require('./routes/quiz');
+const paletteRoutes = require('./routes/palette');
 
 // MongoDB 연결 URI
 const MONGO_URI = process.env.MONGO_URI
@@ -35,11 +36,12 @@ app.use("/uploads", express.static("uploads"));
 //API 
 //app.use('/', authRouter); //카카오 로그인 URL
 app.use('/auth', authRouter); //위 Api와 중복되어 주석처리
-app.use('/users', userRoutes); //유저 목록 조회, 유저 추가, get 조회, post 추가
+app.use('/users', userRoutes); //유저 목록 조회, 유저 추가, get 조회, post 추가, patch /update-score/:id 점수 업업데이트
 app.use('/profile', profileRoutes); //프로필 조회, 프로필 추가, get 조회, post 추가 - 토큰 필요
 app.use('/api/friends', friendRoutes); // post send-request 요청 보내기, post accept-request 요청 승인, /delete-friend 친구 삭제
 app.use('/posts', postRouter); //post add 게시글 추가, get / 게시글 목록 조회, delete /delete/:id, 폼 타입으로 요청 필요
 app.use('/api/quizzes', quizRoutes); // get / 퀴즈 목록 조회
+app.use('/api/palette', paletteRoutes); // post /update 색상 데이터 추가 또는 업데이트, get /:userId 사용자 색상 데이터 조회
 
 // Routes
 // app.get('/', (req, res) => {
