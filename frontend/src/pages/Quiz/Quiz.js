@@ -84,6 +84,58 @@ const Quiz = () => {
   const [userAnswer, setUserAnswer] = useState('');
   const [showResult, setShowResult] = useState(false);
 
+  const updateSessionStorage = (key, value) => {
+    sessionStorage.setItem(key, JSON.stringify(value));
+    const event = new Event('updateSession');
+    window.dispatchEvent(event);
+  };
+  
+
+  const handleSaveScore = async () => {
+    const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+    const token = sessionStorage.getItem('token');
+
+    if (!userInfo || !userInfo.userId) {
+      alert('사용자 정보를 확인할 수 없습니다.');
+      return;
+    }
+
+    const previousScore = userInfo.score || 0; // 세션에 저장된 이전 점수 (없으면 0으로 처리)
+
+    if (score <= previousScore) {
+      console.log('현재 점수가 세션 점수보다 낮거나 같아 업데이트하지 않습니다.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/users/update-score/${userInfo.userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ score }),
+      });
+
+      if (!response.ok) {
+        throw new Error('점수 업데이트에 실패했습니다.');
+      }
+
+      const updatedUser = await response.json();
+      console.log('Score updated successfully:', updatedUser);
+
+      // 세션 스토리지 업데이트
+      updateSessionStorage('userInfo', {
+        ...userInfo,
+        score: updatedUser.user.score,
+      });
+
+    } catch (error) {
+      console.error('Error updating score:', error);
+      alert('점수 업데이트 중 오류가 발생했습니다.');
+    }
+  };
+
   useEffect(() => {
     if (step === 'quiz') {
       // 퀴즈 문제를 백엔드에서 가져옴
@@ -103,6 +155,12 @@ const Quiz = () => {
       fetchQuestions();
     }
   }, [step]);
+
+  useEffect(() => {
+    if (step === 'end') {
+      handleSaveScore(); // 퀴즈가 끝난 후 점수 저장
+    }
+  }, [step]); // step이 'end'로 변경될 때 실행
 
   const handleStart = () => {
     setStep('quiz');
@@ -132,6 +190,39 @@ const Quiz = () => {
     setScore(0);
     setUserAnswer('');
     setShowResult(false);
+  };
+
+  const handleShare = (score) => {
+    if (!window.Kakao) {
+      console.error('Kakao SDK not loaded');
+      return;
+    }
+
+    if (!window.Kakao.isInitialized()) {
+      window.Kakao.init(process.env.REACT_APP_JAVASCRIPT_KEY);
+    }
+
+    window.Kakao.Share.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: '요즘..젊은..것들은...에잉잉..',
+        description: `나는.${score}점이다.이눔아! 요즘애들은.몇점이나.나오냐?`,
+        imageUrl: `https://health.chosun.com/site/data/img_dir/2009/12/10/2009121001056_0.jpg`,
+        link: {
+          mobileWebUrl: `http://localhost:3000`,
+          webUrl: `http://localhost:3000`,
+        },
+      },
+      buttons: [
+        {
+          title: '웹으로 보기',
+          link: {
+            mobileWebUrl: `http://localhost:3000`,
+            webUrl: `http://localhost:3000`,
+          },
+        },
+      ],
+    });
   };
 
   const ShareButton = styled(Button)`
@@ -218,8 +309,7 @@ const Quiz = () => {
           <Button onClick={handleRestart}>다시하기</Button>
           <ShareButton
             onClick={() => {
-              alert('퀴즈 점수를 공유합니다!');
-              // 공유 기능 구현 (e.g., 클립보드에 복사 또는 SNS 공유)
+              handleShare(score)
             }}
           >
             공유하기

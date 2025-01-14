@@ -43,11 +43,12 @@ authRouter.get('/kakao/callback', async (req, res) => {
         console.log('Kakao User Data:', userResponse.data);
 
         const { id: kakaoId, properties } = userResponse.data;
-        const { nickname: name, profile_image: profileImage } = properties;
+        const { nickname: name, profile_image: profileImage, score: score } = properties;
 
         console.log('kakaoId:', kakaoId);
         console.log('name:', name);
         console.log('profileImage:', profileImage);
+        console.log('score:', score);
 
         // 사용자 DB 저장 또는 업데이트
         let user = await User.findOne({ kakaoId });
@@ -62,7 +63,7 @@ authRouter.get('/kakao/callback', async (req, res) => {
 
         // JWT 발급
         const token = jwt.sign(
-            { userId: user._id, name: user.name, profileImage: user.profileImage }, // 사용자 정보 포함
+            { userId: user._id, name: user.name, profileImage: user.profileImage, score: user.score }, // 사용자 정보 포함
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );
