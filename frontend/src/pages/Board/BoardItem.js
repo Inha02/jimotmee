@@ -69,13 +69,15 @@ const ButtonWrapper = styled.div`
     border-radius: 5px;
     padding: 5px 10px;
     margin-left: 10px;
+    margin-right: 10px;
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: bold;
     color: #555;
 
     &:hover {
-      background: #ddd;
+      color: #fff;
+      background: ${props => props.theme.mainColor.color};
     }
   }
 `;
@@ -104,7 +106,6 @@ const BoardItem = ({ post }) => {
           <p className="txt">{post.content}</p>
         </TxtWrapper>
         <ButtonWrapper>
-          <button>좋아요</button>
           <button>공유</button>
         </ButtonWrapper>
       </PostWrapper>

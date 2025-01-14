@@ -4,7 +4,7 @@ import { ThemeProvider } from 'styled-components';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Home from './pages/Home';
 import Board from './pages/Board';
-import Profile from './pages/Quiz';
+import Quiz from './pages/Quiz';
 import BeforeLogin from './pages/BeforeLogin/BeforeLogin';
 import KakaoCallbackHandler from './pages/callback';
 import GlobalMusicPlayer from './components/GlobalMusicPlayer';
@@ -49,7 +49,7 @@ const App = () => {
                     {isLoggedIn ? <Board /> : <Redirect to="/before-login" />}
                 </Route>
 
-                {/* 퀴즈즈 페이지 */}
+                {/* 퀴즈 페이지 */}
                 <Route path="/quiz">
                     {isLoggedIn ? <Quiz /> : <Redirect to="/before-login" />}
                 </Route>

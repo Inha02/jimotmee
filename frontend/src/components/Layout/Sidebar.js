@@ -27,10 +27,7 @@ const Sidebar = ({ children }) => {
   return (
     <SidebarBlock>
       <ul>
-        <li>
-          TODAY <span className="today">1</span>
-        </li>
-        <li>TOTAL 999999</li>
+        Jimotmee
       </ul>
       {children}
     </SidebarBlock>
