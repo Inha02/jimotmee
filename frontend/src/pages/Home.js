@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Layout from '../components/Layout/Layout';
 import Sidebar from '../components/Layout/Sidebar';
@@ -149,6 +150,65 @@ const Home = () => {
   const profileImage = userInfo && userInfo.profileImage ? userInfo.profileImage : publicUrl + '/resources/img/memo_.jpg';
   const myname = userInfo.name;
 
+  const olOptions = [
+    [
+      "ŀ ĿØvЁ уØЦ *…",
+      "ㄴГㅁざㅂГㄹГ보Гㅈゴ…ε♡з"
+    ],
+    [
+      "우ºㄹiº참º좋º恩º친º⑨º됐º으º면º조ºㅋrºㄸr ",
+      "☆じ┣ 丕の┣?¿☆"
+    ],
+    [
+      "*`_*행복ol란`*`웃어야zl*`존자l한다l♥ ",
+      "★-··Lŀ는,ユ댈향ぁĦ,口l소짓죠··-★ "
+    ],
+    [
+      "믿고의ズl할水ː있는건∥친구∥뿐Øl㈐",
+      "●친구øF, ㄴıㄱŀ 보고 싶Øł●"
+    ],
+    [
+      "`*,`*,당신oㅔ게 영원한 우정을 약속합Ll다♡",
+      "우乙l우정 변ㅊl않을꺼ㅈl[?]"
+    ],
+    [
+      "( . .)☆´˚。☆",
+      "( づ♡ ☆"
+    ],
+    [
+      "♡*♡*♡*♡*♡*♡*♡*♡*♡*♡*♡*♡ ",
+      "*∵♨∵♨∵♨∵♨∵♨∵♨∵♨∵♨∵♨∵*"
+    ],
+    [
+      "♥:..*..♡..*..:♥:..*..♡..*..:♥:..*..♡..*..:♥ ",
+      "....:*:♥♡♥:*:....:*:♥♡♥:*:....:*:♥♡♥:*:.... "
+    ],
+    [
+      "╋┏━┓╋♡╋┏━┓╋♡╋┏━┓╋ ",
+      "╋┗━┛╋♡╋┗━┛╋♡╋┗━┛╋"
+    ],
+    [
+      "*:..:*:..:*:..:*LOVE*:..:*LOVE*:..:*:..:*:..:* ",
+      "♥:..*..♡..*..:♥:..*..♡..*..:♥:..*..♡..*..:♥ "
+    ],
+    [
+      "그다l 원라l ○ı런 ",
+      "사람Οl었ㄴГ요"
+    ],
+    [
+      "§+칭＊구＊얌..＊④＊랑＊㉭ㅐ+☆",
+      "☆™우정의 쪼꼬㉥㉥ㅏ㉧ㅣ..☆"
+    ],
+  ];
+
+  const [selectedOl, setSelectedOl] = useState([]);
+
+  useEffect(() => {
+    // 랜덤으로 `olOptions` 중 하나를 선택
+    const randomIndex = Math.floor(Math.random() * olOptions.length);
+    setSelectedOl(olOptions[randomIndex]);
+  }, []);
+
   return (
     <Layout>
       <Sidebar>
@@ -192,11 +252,11 @@ const Home = () => {
             </div>
           </ContentSection>
           <ContentSection>
-            <h2>스코어보드</h2>
+            <h2>얘들아... ㄱ나니??</h2>
             <ol>
-              <li>싸이월드 미니홈피 감성으로 기획, 개발했습니다~☆</li>
-              <li>프로필 페이지를 구경해주세요~☆</li>
-              <li>배경도 바꿀 수 있답니다~☆</li>
+            {selectedOl.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
             </ol>
           </ContentSection>
         </Card>

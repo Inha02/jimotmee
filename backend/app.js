@@ -9,7 +9,6 @@ app.use(express.json());
 const mongoose = require('mongoose');
 
 const authRouter = require('./routes/auth');
-app.use('/auth', authRouter);
 const profileRoutes = require('./routes/profile');
 const userRoutes = require('./routes/user');
 const friendRoutes = require('./routes/friendRoutes');
