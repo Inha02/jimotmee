@@ -55,7 +55,7 @@ const DogState = require('./models/dogState');
 
 cron.schedule('*/1 * * * *', async () => {
     console.log('모든 사용자 강아지 상태 업데이트 실행...');
-    const states = ['배고픔', '씻기', '산책필요'];
+    const states = ['배고픔', '더러움', '산책필요'];
 
     try {
         const allDogs = await DogState.find();

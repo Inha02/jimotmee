@@ -22,17 +22,17 @@ const Tab = styled.li`
 const PaletteTab = ({ target, setTarget, setHexColor }) => {
   const { palette } = useSelector(state => state);
 
-  // 탭 리스트
-  const tabList = [];
-  let index = 1;
-  for (let key in palette) {
-    tabList.push({ id: index++, target: key, color: palette[key].color });
-  }
+  // 탭 리스트 생성
+  const tabList = Object.keys(palette).map((key, index) => ({
+    id: index + 1,
+    target: key,
+    color: palette[key]?.color || '#fff', // 기본 색상 안전 처리
+  }));
 
-  // 탭 클릭할 때마다 스와치 컬러 랜덤적용
+  // 탭 클릭 핸들러
   const onClick = target => {
     setTarget(target);
-    setHexColor(getRandomHexColor());
+    setHexColor(palette[target]?.color || getRandomHexColor()); // 기존 색상 또는 랜덤 색상 적용
   };
 
   return (

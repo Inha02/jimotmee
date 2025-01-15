@@ -1,66 +1,52 @@
+import 'whatwg-fetch';
+
 const SET_COLOR = 'palette/SET_COLOR';
+const LOAD_PALETTE = 'palette/LOAD_PALETTE';
 
-export const setColor = payload => ({ type: SET_COLOR, payload });
+export const setColor = (payload) => ({ type: SET_COLOR, payload });
+export const loadPalette = (payload) => ({ type: LOAD_PALETTE, payload });
 
-const initialState = {
-  bg: {
-    title: '배경',
-    color: 'gray',
-  },
-  layoutBorder1: {
-    title: '바깥 테두리',
-    color: 'black',
-  },
-  layoutBg1: {
-    title: '바깥(1) 영역',
-    color: '#a9d2d9',
-  },
-  layoutBorder2: {
-    title: '점선 테두리',
-    color: '#fff',
-  },
-  layoutBg2: {
-    title: '바깥(2) 영역',
-    color: 'lightgray',
-  },
-  cardBorder: {
-    title: '안쪽 테두리',
-    color: '#a5a5a5',
-  },
-  cardBg: {
-    title: '안쪽 영역',
-    color: '#fff',
-  },
-  mainColor: {
-    title: '메인 메뉴',
-    color: '#238db3',
-  },
-  headerColor: {
-    title: '미니포트폴리 타이틀',
-    color: '#333',
-  },
-  textColor: {
-    title: '서브페이지 메뉴',
-    color: '#07698c',
-  },
+const initialState = null; // 초기 상태를 null로 설정
+
+// API 호출 함수 정의
+export const fetchPalette = async (userId) => {
+  try {
+    const response = await fetch(`/api/palette/${userId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.data; // 서버에서 받은 팔레트 데이터 반환
+  } catch (error) {
+    console.error('팔레트 데이터 조회 실패:', error);
+    throw error;
+  }
 };
 
+export const updatePalette = async (userId, key, title, color) => {
+  try {
+    const payload = { userId, key, title, color };
+    const response = await fetch('/api/palette/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return true;
+  } catch (error) {
+    console.error('팔레트 데이터 업데이트 실패:', error);
+    throw error;
+  }
+};
+
+// Reducer
 export default function palette(state = initialState, action) {
   switch (action.type) {
+    case LOAD_PALETTE:
+      return action.payload; // DB에서 가져온 데이터로 상태 설정
     case SET_COLOR: {
-      // JWT 유효성 확인
-      const tokenExpiry = sessionStorage.getItem('tokenExpiry');
-      const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초 단위)
-
-      if (!tokenExpiry || currentTime >= parseInt(tokenExpiry, 10)) {
-        console.warn('JWT가 유효하지 않거나 만료되었습니다. 로그인을 다시 시도하세요.');
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('tokenExpiry');
-        sessionStorage.removeItem('userInfo');
-        return state; // 상태 변경 없이 현재 상태 반환
-      }
-
-      // 색상 변경 처리
       const { key, value } = action.payload;
       return {
         ...state,
@@ -70,7 +56,6 @@ export default function palette(state = initialState, action) {
         },
       };
     }
-
     default:
       return state;
   }

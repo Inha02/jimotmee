@@ -90,7 +90,7 @@ const Palette = ({ target, hexColor, setHexColor }) => {
   // hexColor 변경
   const handleHexColor = useCallback(color => {
     setHexColor(color);
-  }, []);
+  }, [setHexColor]);
 
   // 스와치(input[type=color]) 컬러 변경
   const onChange = e => setHexColor(e.target.value);
@@ -101,12 +101,12 @@ const Palette = ({ target, hexColor, setHexColor }) => {
       setColor({
         key: target,
         value: hexColor,
-      }),
+      })
     );
   };
 
   return (
-    <Wrapper color={palette[target]['color']}>
+    <Wrapper color={palette[target]?.color || '#fff'}>
       <WhiteWrapper>
         <SwatchWrapper>
           <Swatch
@@ -117,7 +117,7 @@ const Palette = ({ target, hexColor, setHexColor }) => {
             title="DON'T PASS ME! PICK ANOTHER COLOR!"
           />
           <SwatchInfo>
-            <p>{palette[target]['title']}</p>
+            <p>{palette[target]?.title || 'Unknown'}</p>
             <Buttons>
               <Button
                 type="button"
