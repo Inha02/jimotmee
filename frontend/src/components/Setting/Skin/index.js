@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { MdKeyboardArrowUp, MdKeyboardArrowDown } from 'react-icons/md';
 import PaletteTab from './PaletteTab';
 import Palette from './Palette';
+import { fetchPalette, loadPalette, updatePalette } from '../../../module/palette';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Wrapper = styled.div`
   margin-top: 10px;
@@ -36,6 +38,8 @@ const Message = styled.p`
 `;
 
 const ChangeSkin = () => {
+  const dispatch = useDispatch();
+  const palette = useSelector(state => state.palette);
   const [isOpen, setIsOpen] = useState(false); // 배경 변경 패널 토글 상태
   const [target, setTarget] = useState('bg'); // 변경 대상
   const [hexColor, setHexColor] = useState('#ffc9c9'); // 현재 색상
@@ -62,26 +66,36 @@ const ChangeSkin = () => {
     // JWT가 유효하다면 DB에서 사용자 데이터를 로드
     if (isLoggedIn) {
       setIsLoading(true);
-      const token = sessionStorage.getItem('token');
-      fetch('/api/user/colors', {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            setHexColor(data.colors[target] || '#ffc9c9'); // 기본 색상 설정
+      const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+      const userId = userInfo?.userId;
+      fetchPalette(userId)
+        .then(response => {
+          if (Array.isArray(response)) {
+            const data = response.reduce((acc, item) => {
+              acc[item.key] = { title: item.title, color: item.color };
+              return acc;
+            }, {});
+            dispatch(loadPalette(data)); // Redux 상태에 로드
+            setHexColor(data[target]?.color || '#ffc9c9'); // 초기 색상 설정
           } else {
-            console.error('배경 색상 데이터를 불러오지 못했습니다.');
+            console.warn('유효하지 않은 팔레트 데이터:', response);
           }
         })
-        .catch(err => console.error('배경 색상 로드 오류:', err))
+        .catch(err => console.error('팔레트 로드 오류:', err))
         .finally(() => setIsLoading(false));
     }
-  }, [target, isLoggedIn]);
+  }, [isLoggedIn, dispatch, target]);
+
+  const handleColorChange = (key, color) => {
+    setHexColor(color);
+    const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+    const userId = userInfo?.userId;
+    if (userId) {
+      updatePalette(userId, key, palette[key]?.title || 'Unknown', color)
+        .then(() => console.log('색상 업데이트 성공'))
+        .catch(err => console.error('색상 업데이트 실패:', err));
+    }
+  };
 
   if (!isLoggedIn) {
     return (
@@ -111,7 +125,7 @@ const ChangeSkin = () => {
           <Palette
             target={target}
             hexColor={hexColor}
-            setHexColor={setHexColor}
+            setHexColor={(color) => handleColorChange(target, color)}
           />
         </ToggleContent>
       )}
