@@ -47,7 +47,9 @@ SMWU 인공지능공학부 22학번 최인하
 ---
 <br>
 <img width="700" alt="image" src="https://github.com/user-attachments/assets/1cc38616-8b39-44b5-8f79-70c3b9c6e1bb" />
+<img width="153" alt="image" src="https://github.com/user-attachments/assets/fc435355-028e-4b51-b954-05bebc8157f4" />
 <br>
+
 + 프로필 사진, 이름 변경 
 
 + 배경색, 글자색 변경
@@ -57,6 +59,7 @@ SMWU 인공지능공학부 22학번 최인하
 + 마이펫 키우기 
   + 강아지 상태 30분마다 돌봄이 필요한 상태로 랜덤하게 변경
   + 해당하는 돌봄 버튼을 클릭하면 '행복함' 상태로 변경
+  + 마이켓 키우기는 퀴즈에서 80점 이상 득점 시 해제
  
 <br>
 <br>
