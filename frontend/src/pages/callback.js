@@ -38,6 +38,7 @@ const KakaoCallbackHandler = () => {
                         name: decodedPayload.name,
                         profileImage: decodedPayload.profileImage,
                         userId: decodedPayload.userId,
+                        score: decodedPayload.score,
                     })
                 );
                 sessionStorage.setItem('tokenExpiry', decodedPayload.exp);

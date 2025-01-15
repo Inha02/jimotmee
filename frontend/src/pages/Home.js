@@ -68,16 +68,22 @@ const ProfileSection = styled.section`
   .profile-row {
     display: flex;
     align-items: center;
-    justify-content: center; /* 기본적으로 이름을 가운데 정렬 */
+    justify-content: center;
     margin-top: 10px;
-    position: relative; /* 로그아웃 버튼의 위치를 조정하기 위한 상대 위치 */
+    position: relative;
   }
   .my-name {
     font-size: 1.05rem;
     font-weight: bold;
-    color: ${props => props.theme.mainColor.color};
+    color: ${(props) => props.theme.mainColor.color};
   }
-  .logout-button {
+  .edit-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: center;
+  }
+  .button {
     position: absolute; /* 로그아웃 버튼을 이름 오른쪽 끝에 고정 */
     right: 0;
     font-size: 0.75rem;
@@ -88,7 +94,35 @@ const ProfileSection = styled.section`
     background: none;
     cursor: pointer;
     &:hover {
-      background-color: ${props => props.theme.mainColor.color};
+      background-color: ${(props) => props.theme.mainColor.color};
+      color: white;
+    }
+  }
+  .edit-button {
+    margin-top: 10px; /* 이름과 로그아웃 버튼 아래에 위치 */
+    font-size: 0.75rem;
+    color: #666;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 3px 20px;
+    background: none;
+    cursor: pointer;
+    &:hover {
+      background-color: ${(props) => props.theme.mainColor.color};
+      color: white;
+    }
+  }
+  .confirm-button {
+    margin-top: 10px; /* 이름과 로그아웃 버튼 아래에 위치 */
+    font-size: 0.75rem;
+    color: #666;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 3px 6px;
+    background: none;
+    cursor: pointer;
+    &:hover {
+      background-color: ${(props) => props.theme.mainColor.color};
       color: white;
     }
   }
@@ -137,7 +171,7 @@ const MyPet = styled.div`
 
 const Home = () => {
   // 로그아웃 함수
-  const logout = () => {
+  const handleLogout = () => {
     alert('로그아웃 되었습니다!');
     sessionStorage.clear();
     window.location.reload();
@@ -147,8 +181,9 @@ const Home = () => {
   const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
 
   // profileImage가 존재하면 해당 URL을 사용하고, 없으면 기본 이미지를 사용
-  const profileImage = userInfo && userInfo.profileImage ? userInfo.profileImage : publicUrl + '/resources/img/memo_.jpg';
-  const myname = userInfo.name;
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState(userInfo.name || '');
+  const [profileImage, setProfileImage] = useState(userInfo.profileImage || '');
 
   const olOptions = [
     [
@@ -209,19 +244,105 @@ const Home = () => {
     setSelectedOl(olOptions[randomIndex]);
   }, []);
 
+  const handleEdit = () => setIsEditing(true);
+
+  const handleSave = async () => {
+    const token = sessionStorage.getItem('token');
+    try {
+      const formData = new FormData();
+      formData.append('name', name);
+      if (profileImage instanceof File) {
+        formData.append('profileImage', profileImage);
+      } else if (typeof profileImage === 'string') {
+        formData.append('profileImage', profileImage); // 기존 URL 유지
+      }
+
+      const response = await fetch('/profile', {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+
+      const updatedUser = await response.json();
+      sessionStorage.setItem(
+        'userInfo',
+        JSON.stringify({
+          name: updatedUser.name,
+          profileImage: updatedUser.profileImage,
+        })
+      );
+      setIsEditing(false);
+      console.log('Profile updated successfully:', updatedUser);
+    } catch (err) {
+      console.error('Error updating profile:', err);
+    }
+  };
+
+  const handleCancel = () => {
+    setName(userInfo.name || '');
+    setProfileImage(userInfo.profileImage || '');
+    setIsEditing(false);
+  };
+
+  const handleImageChange = (event) => {
+    if (event.target.files[0]) {
+      setProfileImage(event.target.files[0]);
+    }
+  };
+
   return (
     <Layout>
       <Sidebar>
         <Card>
           <FlexWrapper>
-            <ProfileSection>
-              <img src={profileImage} alt="profile" />
-              <div className="profile-row">
-                <span className="my-name">{myname}</span>
-                <button className="logout-button" onClick={logout}>
-                  로그아웃
+          <ProfileSection>
+            <img
+              src={profileImage instanceof File ? URL.createObjectURL(profileImage) : profileImage}
+              alt="profile"
+              onClick={() => isEditing && document.getElementById('profileImageInput').click()}
+            />
+            <input
+              id="profileImageInput"
+              type="file"
+              style={{ display: 'none' }}
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            {isEditing ? (
+              <>
+                <input
+                  className="name-input"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <div className="edit-buttons">
+                  <button className="confirm-button" onClick={handleSave}>
+                    확인
+                  </button>
+                  <button className="confirm-button" onClick={handleCancel}>
+                    취소
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="profile-row">
+                  <span className="my-name">{name}</span>
+                  <button className="button" onClick={handleLogout}>
+                    로그아웃
+                  </button>
+                </div>
+                <button className="edit-button" onClick={handleEdit}>
+                  프로필 수정
                 </button>
-              </div>
+              </>
+            )}
             </ProfileSection>
 
             <MyPet>

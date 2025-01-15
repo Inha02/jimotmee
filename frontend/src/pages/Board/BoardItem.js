@@ -125,7 +125,7 @@ const BoardItem = ({ post, onDelete }) => {
       content: {
         title: '친구야.. ㄱ나니??',
         description: post.content,
-        imageUrl: `http://localhost:5000/uploads/${post.image}`,
+        imageUrl: `https://item.kakaocdn.net/do/03c52e10ebbd233c0e7e44361e34e8479f17e489affba0627eb1eb39695f93dd`,
         link: {
           mobileWebUrl: `http://localhost:3000/posts/${post._id}`,
           webUrl: `http://localhost:3000/posts/${post._id}`,

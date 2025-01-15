@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const SidebarBlock = styled.div`
@@ -12,11 +12,6 @@ const SidebarBlock = styled.div`
     justify-content: center;
     font-size: 0.8rem;
     line-height: 1.4;
-    li:first-of-type {
-      padding-right: 10px;
-      margin-right: 10px;
-      border-right: 1px solid;
-    }
   }
   .today {
     color: #e03131;
@@ -24,10 +19,28 @@ const SidebarBlock = styled.div`
 `;
 
 const Sidebar = ({ children }) => {
+  const [highScore, setHighScore] = useState(() => {
+    const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+    return userInfo?.score || 0;
+  });
+
+  useEffect(() => {
+    const handleStorageUpdate = () => {
+      const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+      setHighScore(userInfo?.score || 0);
+    };
+
+    window.addEventListener('updateSession', handleStorageUpdate);
+
+    return () => {
+      window.removeEventListener('updateSession', handleStorageUpdate);
+    };
+  }, []);
+
   return (
     <SidebarBlock>
       <ul>
-        Jimotmee
+        <li>High-Score: {highScore}</li>
       </ul>
       {children}
     </SidebarBlock>
