@@ -46,8 +46,8 @@ SMWU 인공지능공학부 22학번 최인하
 **홈**
 ---
 <br>
-<img width="700" alt="image" src="https://github.com/user-attachments/assets/1cc38616-8b39-44b5-8f79-70c3b9c6e1bb" />
-<img width="153" alt="image" src="https://github.com/user-attachments/assets/fc435355-028e-4b51-b954-05bebc8157f4" />
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/1cc38616-8b39-44b5-8f79-70c3b9c6e1bb" />
+<img width="100" alt="image" src="https://github.com/user-attachments/assets/fc435355-028e-4b51-b954-05bebc8157f4" />
 <br>
 
 + 프로필 사진, 이름 변경 
