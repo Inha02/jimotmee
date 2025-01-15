@@ -8,7 +8,7 @@ const dogStateSchema = new mongoose.Schema({
     },
     state: {
         type: String,
-        enum: ['행복함', '배고픔', '씻기', '산책필요'],
+        enum: ['행복함', '배고픔', '더러움', '산책필요'],
         default: '행복함',
     },
     updatedAt: {

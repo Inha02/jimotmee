@@ -23,16 +23,18 @@ router.get('/:userId', async (req, res) => {
 // 특정 사용자 강아지 상태 업데이트
 router.post('/update', async (req, res) => {
     try {
-        const { userId, newState } = req.body;
+        const { userId } = req.body;
+
+        const happyState = '행복함';
 
         const dogState = await DogState.findOne({ userId });
         if (!dogState) {
-            const newDogState = new DogState({ userId, state: newState });
+            const newDogState = new DogState({ userId, state: happyState });
             await newDogState.save();
             return res.json(newDogState);
         }
 
-        dogState.state = newState;
+        dogState.state = happyState;
         dogState.updatedAt = new Date();
         await dogState.save();
 
